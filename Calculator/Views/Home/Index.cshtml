@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Calculator.Models.TextModel
+ 
+@{
+    Layout = null;
+}
+
+<style>
+.reset-css {
+  all: initial;
+}
+.my-fieldset {
+  border: 1px solid black;
+  padding : 10px;
+} 
+.my-legend {
+  color: black;
+} 
+.btn-cal {
+    background-color: rgba(100, 100, 100, 1);
+    color: white;
+    width: 70px;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+}
+.btn-cal:hover {
+    cursor: pointer;
+    background-color: rgba(100, 100, 100, 0.5);
+}
+.d-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around
+}
+</style>
+
+<script>
+    var xmlHttp = new XMLHttpRequest();
+    function submit() {
+        const sumText = document.getElementById("sumText");
+        xmlHttp.open("POST", '/Home/Calculation');
+        xmlHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlHttp.onreadystatechange = function() {
+            if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                sumText.value = xmlHttp.responseText;
+            }
+        }
+        xmlHttp.send(JSON.stringify(sumText.value));
+    }
+    function onBtnClick(e) {
+        const id = e.id;
+        const sumText = document.getElementById("sumText");
+        if(id === "=") {
+            // console.log(sumText.value);
+            submit();
+        }
+        else {
+            sumText.value += id;
+        }
+    }
+    function clearInp() {
+         const sumText = document.getElementById("sumText");
+         sumText.value = "";
+    }
+</script>
+
+<div>
+    <fieldset class="reset-css my-fieldset" style="margin-left: 10px;">
+        <legend class="reset-css my-legend">Basic Calculator</legend>
+        <input style="width: 100%" id="sumText" />
+        <div style="display: flex; justify-content: space-around; flex-direction: column">
+            @{
+                string[] txtList = { "123+","456-","789*","0.=/" };
+                foreach (var txt in txtList)
+                {      
+                    <div class="d-row">
+                    @foreach(var t in txt)
+                    {
+                        <div onclick="onBtnClick(this)" id=@t class="btn-cal">@t</div>
+                    }
+                    </div>
+                }
+            }
+        </div>
+        <input style="width: 100%" type="submit" value="Clear" onclick="clearInp()"/>
+    </fieldset>
+</div>
